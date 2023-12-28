@@ -9,6 +9,7 @@
         <li v-for="(notification, index) in notifications" :key="index">{{ notification }}</li>
       </ul>
     </div>
+    <button @click="publishMQTT">publish</button>
   </div>
 </template>
 
@@ -37,10 +38,10 @@ export default {
     createConnectionMQTT() {
       try {
         const wss_protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const { topic, qos, payload } = this.subscription;
+        const { topic, qos } = this.subscription;
         this.client = mqtt.connect(wss_protocol + 'localhost:15675', {
-          // clientId: 'clientemqid_vue_' + Math.random().toString(16).substring(2, 8) + '_',
-          clientId: 'clientemqid_vue_' + 2512 + '_',
+          clientId: 'clientemqid_vue_' + Math.random().toString(16).substring(2, 8) + '_',
+          // clientId: 'clientemqid_vue_' + 2512 + '_',
           username: 'rabbitmq-service',
           password: 'rabbitmq-service',
           port: 15675,
@@ -59,11 +60,6 @@ export default {
                 console.log(`Failed to subscribe to ${topic}: ${err}`);
               } else {
                 console.log(`Subscribed to ${topic}:`, res);
-                this.client.publish(topic, payload, (error) => {
-                  if (error) {
-                    console.log('Publish error', error);
-                  }
-                });
               }
             });
           });
@@ -81,6 +77,14 @@ export default {
         this.connected = false;
         console.log('mqtt.connect error', error);
       }
+    },
+    publishMQTT() {
+      const { topic, qos, payload } = this.subscription;
+      this.client.publish(topic, payload, (error) => {
+        if (error) {
+          console.log('Publish error', error);
+        }
+      });
     },
     destroyConnectionMQTT() {
       if (this.client.connected) {
