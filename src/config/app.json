@@ -1,0 +1,7 @@
+{
+  "vhosts": {
+    "vh_zicare1": {
+      "connection": "amqp://rabbitmq-service:rabbitmq-service@localhost:5672/vh_zicare1?heartbeat=10"
+    }
+  }
+}
